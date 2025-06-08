@@ -14,7 +14,7 @@ class TeleportRequestCommand extends Command
 {
     
     /** @var array<string, array{from: string, expires: int}> */
-    private array $requests = [];
+    public static array $requests = [];
     
     public function __construct()
     {
@@ -27,7 +27,7 @@ class TeleportRequestCommand extends Command
         if ($sender instanceof Player){
             switch ($commandLabel) {
                 case "tpa":
-                    foreach ($this->requests as $target => $data) {
+                    foreach (self::$requests as $target => $data) {
                         if ($data["from"] === $sender->getName()) {
                             $sender->sendMessage("§cZaten bekleyen bir isteğin var.");
                             return true;
@@ -41,7 +41,7 @@ class TeleportRequestCommand extends Command
 
                     $target = Server::getInstance()->getPlayerByPrefix(implode(" ", $args));
                     if ($target instanceof Player && $target !== $sender) {
-                        $this->requests[$target->getName()] = [
+                        self::$requests[$target->getName()] = [
                             "from" => $sender->getName(),
                             "expires" => time() + 60
                         ];
@@ -50,13 +50,13 @@ class TeleportRequestCommand extends Command
                         $target->sendMessage("§e" . $sender->getName() . " sana ışınlanma isteği gönderdi.\n§a» /tpaccept\n§c» /tpdeny");
 
                         Main::$instance->getScheduler()->scheduleDelayedTask(new ClosureTask(function() use ($target) {
-                            if (isset($this->requests[$target->getName()])) {
-                                $from = $this->requests[$target->getName()]["from"];
+                            if (isset(self::$requests[$target->getName()])) {
+                                $from = self::$requests[$target->getName()]["from"];
                                 $requester = Server::getInstance()->getPlayerExact($from);
                                 if ($requester instanceof Player) {
                                     $requester->sendMessage("§cİsteğin zaman aşımına uğradı.");
                                 }
-                                unset($this->requests[$target->getName()]);
+                                unset(self::$requests[$target->getName()]);
                             }
                         }), 20 * 60);
                     } elseif ($target === $sender) {
@@ -67,27 +67,27 @@ class TeleportRequestCommand extends Command
                     break;
 
                 case "tpak":
-                    if (isset($this->requests[$sender->getName()])) {
-                        $from = $this->requests[$sender->getName()]["from"];
+                    if (isset(self::$requests[$sender->getName()])) {
+                        $from = self::$requests[$sender->getName()]["from"];
                         $requester = Server::getInstance()->getPlayerExact($from);
                         if ($requester instanceof Player) {
                             $requester->teleport($sender->getPosition());
                             $requester->sendMessage("§aİsteğin kabul edildi!");
                             $sender->sendMessage("§aIşınlanma isteğini kabul ettin.");
                         }
-                        unset($this->requests[$sender->getName()]);
+                        unset(self::$requests[$sender->getName()]);
                     } else {
                         $sender->sendMessage("§cSana gönderilmiş bir istek yok.");
                     }
                     break;
                 case "tpar":
-                    if (isset($this->requests[$sender->getName()])) {
-                        $from = $this->requests[$sender->getName()]["from"];
+                    if (isset(self::$requests[$sender->getName()])) {
+                        $from = self::$requests[$sender->getName()]["from"];
                         $requester = Server::getInstance()->getPlayerExact($from);
                         if ($requester instanceof Player) {
                             $requester->sendMessage("§cİsteğin reddedildi.");
                         }
-                        unset($this->requests[$sender->getName()]);
+                        unset(self::$requests[$sender->getName()]);
                         $sender->sendMessage("§aIşınlanma isteğini reddettin.");
                     } else {
                         $sender->sendMessage("§cSana gönderilmiş bir istek yok.");

@@ -9,7 +9,6 @@ use pocketmine\plugin\PluginBase;
 
 class Main extends PluginBase implements Listener {
 
-    private array $requests = [];
     public static self $instance;
 
     public function onEnable(): void {
@@ -22,9 +21,9 @@ class Main extends PluginBase implements Listener {
     public function onQuit(PlayerQuitEvent $event): void {
         $name = $event->getPlayer()->getName();
 
-        foreach ($this->requests as $target => $data) {
+        foreach (TeleportRequestCommand::$requests as $target => $data) {
             if ($target === $name || $data["from"] === $name) {
-                unset($this->requests[$target]);
+                unset(TeleportRequestCommand::$requests[$target]);
             }
         }
     }
