@@ -12,6 +12,10 @@ use pocketmine\Server;
 
 class TeleportRequestCommand extends Command
 {
+    
+    /** @var array<string, array{from: string, expires: int}> */
+    private array $requests = [];
+    
     public function __construct()
     {
         parent::__construct("tpa", "Işınlanma isteği komutu", "/tpa", ["tpak", "tpar"]);
