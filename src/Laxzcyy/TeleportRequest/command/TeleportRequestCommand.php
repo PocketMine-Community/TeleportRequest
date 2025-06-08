@@ -12,7 +12,6 @@ use pocketmine\Server;
 
 class TeleportRequestCommand extends Command
 {
-
     public function __construct()
     {
         parent::__construct("tpa", "Işınlanma isteği komutu", "/tpa", ["tpak", "tpar"]);
@@ -56,6 +55,8 @@ class TeleportRequestCommand extends Command
                                 unset($this->requests[$target->getName()]);
                             }
                         }), 20 * 60);
+                    } elseif ($target === $sender) {
+                        $sender->sendMessage("§cKendine istek gönderemezsin.");
                     } else {
                         $sender->sendMessage("§cOyuncu bulunamadı.");
                     }
