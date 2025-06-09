@@ -39,7 +39,15 @@ class TeleportRequestCommand extends Command
                         return true;
                     }
 
-                    $target = Server::getInstance()->getPlayerByPrefix(implode(" ", $args));
+                    $searchName = strtolower(implode(" ", $args));
+                    $target = null;
+                    foreach (Server::getInstance()->getOnlinePlayers() as $player) {
+                        if (str_starts_with(strtolower($player->getName()), $searchName)) {
+                            $target = $player;
+                            break;
+                        }
+                    }
+
                     if ($target instanceof Player && $target !== $sender) {
                         self::$requests[$target->getName()] = [
                             "from" => $sender->getName(),
